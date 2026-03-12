@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { store } from '@/store';
-import { setToken, clearAuth } from '@/store/auth.slice';
+import axios from "axios";
+import { store } from "@/store";
+import { setToken, clearAuth } from "@/store/auth.slice";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + '/api/v1',
+  baseURL: import.meta.env.APP_API_URL + "/api/v1",
   withCredentials: true,
   timeout: 15_000,
 });
@@ -25,13 +25,18 @@ api.interceptors.response.use(
     if (!axios.isAxiosError(err)) return Promise.reject(err);
     const orig = err.config as typeof err.config & { _retry?: boolean };
     if (err.response?.status !== 401 || orig?._retry) return Promise.reject(err);
+                                                    
+    // Don't attempt token refresh for auth endpoints (login, signup, etc.)
+    if (orig?.url?.includes('/auth/login') || orig?.url?.includes('/auth/signup')) {
+      return Promise.reject(err);
+    }
 
     if (isRefreshing) {
       return new Promise((resolve, reject) => refreshQueue.push({ resolve, reject })).then(
         (token) => {
           if (orig?.headers) orig.headers.Authorization = `Bearer ${token as string}`;
           return api(orig!);
-        },
+        }
       );
     }
 
@@ -40,9 +45,9 @@ api.interceptors.response.use(
 
     try {
       const { data } = await axios.post<{ accessToken: string }>(
-        `${import.meta.env.VITE_API_URL}/api/v1/auth/refresh`,
+        `${import.meta.env.APP_API_URL}/api/v1/auth/refresh`,
         {},
-        { withCredentials: true },
+        { withCredentials: true }
       );
       store.dispatch(setToken(data.accessToken));
       refreshQueue.forEach((q) => q.resolve(data.accessToken));
@@ -51,11 +56,14 @@ api.interceptors.response.use(
     } catch (e) {
       refreshQueue.forEach((q) => q.reject(e));
       store.dispatch(clearAuth());
-      window.location.href = '/login?reason=session_expired';
+      // Only redirect if we're not already on the login page
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = "/login?reason=session_expired";
+      }
       return Promise.reject(e);
     } finally {
       isRefreshing = false;
       refreshQueue = [];
     }
-  },
+  }
 );

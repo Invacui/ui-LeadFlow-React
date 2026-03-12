@@ -1,14 +1,13 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { FileDropzone } from '@/components/common/FileDropzone';
-import { useUploadLead } from '@/hooks/leads/useUploadLead';
-import { uploadLeadSchema, type UploadLeadFormValues } from '@/schemas/leads.schema';
-import { ROUTES } from '@/constants/routes';
-import { cn } from '@/lib/utils';
+import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { FileDropzone } from "@/components/common/FileDropzone";
+import { useUploadLead } from "@/hooks/leads/useUploadLead";
+import { validationRules, type UploadLeadFormValues } from "@/lib/validationRules";
+import { ROUTES } from "@/constants/routes";
+import { cn } from "@/lib/utils";
 
 interface LeadUploadFormProps {
   onSuccess?: (id: string) => void;
@@ -25,22 +24,20 @@ export function LeadUploadForm({ onSuccess, className }: LeadUploadFormProps) {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<UploadLeadFormValues>({
-    resolver: zodResolver(uploadLeadSchema),
-  });
+  } = useForm<UploadLeadFormValues>();
 
   const handleFile = useCallback(
     (f: File) => {
       setFile(f);
-      setValue('file', f);
+      setValue("file", f);
     },
-    [setValue],
+    [setValue]
   );
 
   const onSubmit = (values: UploadLeadFormValues) => {
     const fd = new FormData();
-    fd.append('name', values.name);
-    fd.append('file', values.file);
+    fd.append("name", values.name);
+    fd.append("file", values.file);
     mutate(fd, {
       onSuccess: (res) => {
         const id = res.data.data.id;
@@ -50,15 +47,16 @@ export function LeadUploadForm({ onSuccess, className }: LeadUploadFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className={cn('flex flex-col gap-6', className)}
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className={cn("flex flex-col gap-6", className)}>
       <div className="space-y-2">
         <label htmlFor="name" className="text-sm font-medium">
           List name
         </label>
-        <Input id="name" placeholder="e.g. Q1 Prospects" {...register('name')} />
+        <Input
+          id="name"
+          placeholder="e.g. Q1 Prospects"
+          {...register("name", validationRules.leadListName)}
+        />
         {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
       </div>
 
@@ -67,13 +65,17 @@ export function LeadUploadForm({ onSuccess, className }: LeadUploadFormProps) {
         <FileDropzone
           onFile={handleFile}
           file={file}
-          accept={{ 'text/csv': ['.csv'], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }}
+          accept={{
+            "text/csv": [".csv"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+          }}
         />
+        <input type="file" className="hidden" {...register("file", validationRules.file)} />
         {errors.file && <p className="text-sm text-destructive">{errors.file.message as string}</p>}
       </div>
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? 'Uploading…' : 'Upload leads'}
+        {isPending ? "Uploading…" : "Upload leads"}
       </Button>
     </form>
   );

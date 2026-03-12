@@ -37,9 +37,20 @@ export const authSlice = createSlice({
   },
 });
 
+// Export for the dispatch actions
 export const { setAuth, setToken, clearAuth } = authSlice.actions;
-export const authReducer = authSlice.reducer;
 
-export const selectUser = (s: { auth: AuthState }) => s.auth.user;
-export const selectIsAuthenticated = (s: { auth: AuthState }) => s.auth.isAuthenticated;
-export const selectAccessToken = (s: { auth: AuthState }) => s.auth.accessToken;
+// Selectors: These functions access specific parts of the auth slice from the global store state.
+// 
+// Note:
+// - The parameter 's' represents the entire Redux store state.
+// - The 'auth' key in 's.auth' should match the key used when registering your reducer in the store.
+// - Ensure that in your store setup, you have:
+//     reducer: { auth: authReducer }
+// - The selectors access properties of the auth slice, e.g., user, isAuthenticated, accessToken.
+// - Make sure the shape of the parameter matches your store configuration for correct type safety.
+export const selectUser = (s: { auth: Pick<AuthState, 'user'> }) => s.auth.user;
+export const selectIsAuthenticated = (s: { auth: Pick<AuthState, 'isAuthenticated'> }) => s.auth.isAuthenticated;
+export const selectAccessToken = (s: { auth: Pick<AuthState, 'accessToken'> }) => s.auth.accessToken;
+
+export const authReducer = authSlice.reducer;

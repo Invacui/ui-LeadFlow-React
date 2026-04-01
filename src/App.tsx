@@ -18,6 +18,8 @@ const Signup = lazy(() => import('@/routes/auth/Signup'));
 const ForgotPassword = lazy(() => import('@/routes/auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/routes/auth/ResetPassword'));
 const VerifyEmail = lazy(() => import('@/routes/auth/VerifyEmail'));
+const VerifyEmailOtp = lazy(() => import('@/routes/auth/VerifyEmailOtp'));
+const SelectPlan = lazy(() => import('@/routes/auth/SelectPlan'));
 
 const DashboardLayout = lazy(() => import('@/routes/dashboard/Layout'));
 const Overview = lazy(() => import('@/routes/dashboard/Overview'));
@@ -74,6 +76,8 @@ const router = createBrowserRouter([
       { path: ROUTES.forgotPassword, element: <S><ForgotPassword /></S> },
       { path: ROUTES.resetPassword, element: <S><ResetPassword /></S> },
       { path: ROUTES.verifyEmail, element: <S><VerifyEmail /></S> },
+      { path: ROUTES.verifyEmailOtp, element: <S><VerifyEmailOtp /></S> },
+      { path: ROUTES.selectPlan, element: <S><SelectPlan /></S> },
     ],
   },
 

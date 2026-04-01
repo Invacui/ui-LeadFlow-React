@@ -4,6 +4,17 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants/routes';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { useAppSelector } from '@/store/hooks';
+import { selectUser } from '@/store/auth.slice';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const links = [
   { to: ROUTES.home, label: 'Home' },
@@ -13,6 +24,7 @@ const links = [
 
 export function MarketingNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const user = useAppSelector(selectUser);
 
   return (
     <nav className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
@@ -41,12 +53,34 @@ export function MarketingNav() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" asChild className="hidden md:inline-flex">
-            <Link to={ROUTES.login}>Log in</Link>
-          </Button>
-          <Button asChild>
-            <Link to={ROUTES.signup}>Get started</Link>
-          </Button>
+          <ThemeToggle />
+          {!user ? (
+            <>
+              <Button variant="ghost" asChild className="hidden md:inline-flex">
+                <Link to={ROUTES.login}>Log in</Link>
+              </Button>
+              <Button asChild>
+                <Link to={ROUTES.signup}>Get started</Link>
+              </Button>
+            </>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">Account</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+                <DropdownMenuItem>Tokens: {user.tokenBalance}</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to={ROUTES.settings}>Account settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to={ROUTES.dashboard}>Go to dashboard</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -78,6 +112,13 @@ export function MarketingNav() {
             className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
           >
             Log in
+          </Link>
+          <Link
+            to={ROUTES.signup}
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+          >
+            Sign up
           </Link>
         </div>
       )}

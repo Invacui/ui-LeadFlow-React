@@ -13,6 +13,9 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectUser } from '@/store/auth.slice';
 import { toggleSidebar } from '@/store/ui.slice';
 import { useLogout } from '@/hooks/auth/useLogout';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 export function DashboardTopbar() {
   const user = useAppSelector(selectUser);
@@ -38,6 +41,7 @@ export function DashboardTopbar() {
       </Button>
 
       <div className="ml-auto flex items-center gap-2">
+        <ThemeToggle />
         <Button variant="ghost" size="icon">
           <Bell className="h-5 w-5" />
         </Button>
@@ -58,6 +62,10 @@ export function DashboardTopbar() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem>Tokens: {user?.tokenBalance ?? 0}</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={ROUTES.settings}>Account settings</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => logout()}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

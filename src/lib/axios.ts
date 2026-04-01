@@ -27,7 +27,12 @@ api.interceptors.response.use(
     if (err.response?.status !== 401 || orig?._retry) return Promise.reject(err);
                                                     
     // Don't attempt token refresh for auth endpoints (login, signup, etc.)
-    if (orig?.url?.includes('/auth/login') || orig?.url?.includes('/auth/signup')) {
+    if (
+      orig?.url?.includes('/auth/login') ||
+      orig?.url?.includes('/auth/signup') ||
+      orig?.url?.includes('/auth/google') ||
+      orig?.url?.includes('/auth/refresh')
+    ) {
       return Promise.reject(err);
     }
 
@@ -44,14 +49,15 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const { data } = await axios.post<{ accessToken: string }>(
+      const { data } = await axios.post<{ success: boolean; data: { accessToken: string } }>(
         `${import.meta.env.APP_API_URL}/api/v1/auth/refresh`,
         {},
         { withCredentials: true }
       );
-      store.dispatch(setToken(data.accessToken));
-      refreshQueue.forEach((q) => q.resolve(data.accessToken));
-      if (orig?.headers) orig.headers.Authorization = `Bearer ${data.accessToken}`;
+      const nextAccessToken = data.data.accessToken;
+      store.dispatch(setToken(nextAccessToken));
+      refreshQueue.forEach((q) => q.resolve(nextAccessToken));
+      if (orig?.headers) orig.headers.Authorization = `Bearer ${nextAccessToken}`;
       return api(orig!);
     } catch (e) {
       refreshQueue.forEach((q) => q.reject(e));

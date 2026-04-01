@@ -14,9 +14,9 @@ export function useSignup() {
   return useMutation({
     mutationFn: (dto: SignupDto) => authService.signup(dto),
     onSuccess: (res) => {
-      dispatch(setAuth({ user: res.data.user, accessToken: res.data.accessToken }));
-      toast.success('Account created!');
-      navigate(ROUTES.dashboard);
+      dispatch(setAuth({ user: res.data.data.user, accessToken: res.data.data.tokens.accessToken }));
+      toast.success('Account created! Verify OTP to continue.');
+      navigate(`${ROUTES.verifyEmailOtp}?email=${encodeURIComponent(res.data.data.user.email)}`);
     },
   });
 }

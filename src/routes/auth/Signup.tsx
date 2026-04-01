@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useSignup } from "@/hooks/auth/useSignup";
 import { validationRules, type SignupFormValues } from "@/lib/validationRules";
 import { ROUTES } from "@/constants/routes";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 export default function Signup() {
   const { mutate, isPending } = useSignup();
@@ -23,7 +24,7 @@ export default function Signup() {
       </div>
 
       <form
-        onSubmit={handleSubmit(({ name, email, password }) => mutate({ name, email, password }))}
+        onSubmit={handleSubmit(({ name, email, password, corporationName }) => mutate({ name, email, password, corporationName }))}
         className="flex flex-col gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Name</label>
@@ -40,7 +41,15 @@ export default function Signup() {
           />
           {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
         </div>
-
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Corporation Name</label>
+        <Input
+         type="text"
+            placeholder="LeadFlow"
+         {...register("corporationName", validationRules.default)}
+        />
+         {errors.corporationName && <p className="text-sm text-destructive">{errors.corporationName.message}</p>}
+        </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">Password</label>
           <Input
@@ -67,6 +76,12 @@ export default function Signup() {
           {isPending ? "Creating account…" : "Create account"}
         </Button>
       </form>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+        <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">or</span></div>
+      </div>
+      <GoogleAuthButton redirectTo={ROUTES.selectPlan} />
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}

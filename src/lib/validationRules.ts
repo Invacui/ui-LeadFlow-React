@@ -9,6 +9,8 @@
  * <Input {...register('email', validationRules.email)} />
  */
 
+import { INDUSTRIES } from "@/constants/industries.constant";
+
 export const validationRules = {
   /**
    * @type {Object} name
@@ -21,6 +23,14 @@ export const validationRules = {
       value: /^[A-Za-z\s]+$/,
       message: "Special characters and numbers are not allowed",
     },
+  },
+
+  /**
+   * @type {Object} industry
+   * @description Validation rules for industry selection fields
+   */
+  industry: {
+    required: "Industry is required",
   },
 
   /**
@@ -103,7 +113,7 @@ export const validationRules = {
    * @description Validation rules for file upload fields
    */
   file: {
-    required: "File is required",
+    // required: "File is required",
     validate: {
       required: (value: FileList | File) => {
         if (value instanceof FileList) {
@@ -119,7 +129,14 @@ export const validationRules = {
           "text/csv",
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         ];
-        return allowedTypes.includes(file.type) || "Only CSV and XLSX files are allowed";
+        const allowedExtensions = [".csv", ".xlsx"];
+
+        const fileTypeValid = allowedTypes.includes(file.type);
+        const fileExtensionValid = allowedExtensions.some((ext) =>
+          file.name.toLowerCase().endsWith(ext)
+        );
+
+        return fileTypeValid || fileExtensionValid || "Only CSV and XLSX files are allowed";
       },
       fileSize: (value: FileList | File) => {
         const file = value instanceof FileList ? value[0] : value;
@@ -162,6 +179,7 @@ export interface SignupFormValues {
   email: string;
   password: string;
   confirmPassword: string;
+  corporationName: string;
 }
 
 export interface ForgotPasswordFormValues {
@@ -185,8 +203,10 @@ export interface LaunchTemplateFormValues {
 }
 
 export interface UploadLeadFormValues {
-  name: string;
+  listName: string;
   file: File;
+  industry: string;
+  description?: string;
 }
 
 export interface CreateLeadFormValues {

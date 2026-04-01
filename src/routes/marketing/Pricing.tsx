@@ -20,13 +20,13 @@ export default function Pricing() {
 
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight">Simple pricing</h1>
-          <p className="mt-4 text-muted-foreground">Pay once, use forever. No subscriptions.</p>
+          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Simple pricing for every stage</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">Start small and scale as your campaigns grow. Transparent token-based pricing.</p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
           {plans.map((plan) => (
-            <Card key={plan.name} className="flex flex-col">
+            <Card key={plan.name} className="flex flex-col border-2 transition hover:-translate-y-1 hover:border-primary/60">
               <CardHeader>
                 <CardTitle>{plan.name}</CardTitle>
                 <CardDescription>{plan.description}</CardDescription>

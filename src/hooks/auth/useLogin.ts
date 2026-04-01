@@ -14,7 +14,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (dto: LoginDto) => authService.login(dto),
     onSuccess: (res) => {
-      dispatch(setAuth({ user: res.data.user, accessToken: res.data.accessToken }));
+      dispatch(setAuth({ user: res.data.data.user, accessToken: res.data.data.tokens.accessToken }));
       toast.success("Welcome back!");
       navigate(ROUTES.dashboard);
     },

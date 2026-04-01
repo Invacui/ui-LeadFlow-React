@@ -30,6 +30,10 @@ export const authSlice = createSlice({
     setToken: (state, { payload }: PayloadAction<string>) => {
       state.accessToken = payload;
     },
+    updateUser: (state, { payload }: PayloadAction<User>) => {
+      state.user = payload;
+      localStorage.setItem('lf-user', JSON.stringify(payload));
+    },
     clearAuth: (state) => {
       Object.assign(state, { user: null, accessToken: null, isAuthenticated: false });
       localStorage.removeItem('lf-user');
@@ -38,7 +42,7 @@ export const authSlice = createSlice({
 });
 
 // Export for the dispatch actions
-export const { setAuth, setToken, clearAuth } = authSlice.actions;
+export const { setAuth, setToken, updateUser, clearAuth } = authSlice.actions;
 
 // Selectors: These functions access specific parts of the auth slice from the global store state.
 // 

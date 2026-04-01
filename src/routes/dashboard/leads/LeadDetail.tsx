@@ -39,7 +39,9 @@ export default function LeadDetail() {
         </PageHeader>
 
         <div>
-          <h2 className="mb-4 font-semibold">Leads ({request.totalLeads.toLocaleString()})</h2>
+          <h2 className="mb-4 font-semibold">
+            Leads ({request.totalLeads ? request.totalLeads.toLocaleString() : '0'})
+          </h2>
           <DataTable columns={leadColumns} data={leads?.data ?? []} isLoading={leadsLoading} />
         </div>
       </div>

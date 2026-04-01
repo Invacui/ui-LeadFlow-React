@@ -14,6 +14,14 @@ interface LeadUploadFormProps {
   className?: string;
 }
 
+export const INDUSTRIES = [
+  'EDTECH', 'PHARMACEUTICAL', 'REALESTATE', 'FINTECH', 'HEALTHCARE', 'SAAS',
+  'MANUFACTURING', 'RETAIL', 'LOGISTICS', 'HOSPITALITY', 'LEGAL', 'AUTOMOTIVE',
+  'TELECOM', 'MEDIA', 'NGO', 'CONSULTING', 'OTHER'
+] as const;
+
+export type INDUSTRIES = typeof INDUSTRIES[number];
+
 export function LeadUploadForm({ onSuccess, className }: LeadUploadFormProps) {
   const navigate = useNavigate();
   const { mutate, isPending } = useUploadLead();
@@ -34,9 +42,17 @@ export function LeadUploadForm({ onSuccess, className }: LeadUploadFormProps) {
     [setValue]
   );
 
+  /**
+   * onSubmit: A callback function that is called when the form is submitted. 
+   * 
+   * FormData is a constructor function that will create an object that can be used to easily construct a set of key/value pairs 
+   * representing form fields and their values, which can then be easily sent using the XMLHttpRequest.send() method or the fetch() API.
+   */
   const onSubmit = (values: UploadLeadFormValues) => {
     const fd = new FormData();
-    fd.append("name", values.name);
+    fd.append("listName", values.listName);
+    fd.append("industry", values.industry);
+    fd.append("description", values.description || "");
     fd.append("file", values.file);
     mutate(fd, {
       onSuccess: (res) => {
@@ -55,9 +71,40 @@ export function LeadUploadForm({ onSuccess, className }: LeadUploadFormProps) {
         <Input
           id="name"
           placeholder="e.g. Q1 Prospects"
-          {...register("name", validationRules.leadListName)}
+          {...register("listName", validationRules.leadListName)}
         />
-        {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+        {errors.listName && <p className="text-sm text-destructive">{errors.listName.message}</p>}
+      </div>
+
+        <div className="space-y-2">
+        <label htmlFor="industry" className="text-sm font-medium">
+          Industry
+        </label>
+        <select
+          id="industry"
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          {...register("industry", validationRules.industry)}
+        >
+          <option value="">Select an industry</option>
+          {INDUSTRIES.map((ind) => (
+            <option key={ind} value={ind}>
+              {ind}
+            </option>
+          ))}
+        </select>
+        {errors.industry && <p className="text-sm text-destructive">{errors.industry.message}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="description" className="text-sm font-medium">
+          Description
+        </label>
+        <Input
+          id="description"
+          placeholder="e.g. List of Q1 Prospects"
+          {...register("description", validationRules.default)}
+        />
+        {errors.description && <p className="text-sm text-destructive">{errors.description.message}</p>}
       </div>
 
       <div className="space-y-2">
